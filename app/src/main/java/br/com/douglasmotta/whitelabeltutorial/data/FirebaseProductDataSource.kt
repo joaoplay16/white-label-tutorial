@@ -5,8 +5,10 @@ import br.com.douglasmotta.whitelabeltutorial.BuildConfig
 import br.com.douglasmotta.whitelabeltutorial.domain.model.Product
 import br.com.douglasmotta.whitelabeltutorial.util.COLLECTION_PRODUCTS
 import br.com.douglasmotta.whitelabeltutorial.util.COLLECTION_ROOT
+import br.com.douglasmotta.whitelabeltutorial.util.STORAGE_IMAGES
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import java.util.*
 import kotlin.coroutines.suspendCoroutine
 
 class FirebaseProductDataSource(
@@ -40,7 +42,22 @@ class FirebaseProductDataSource(
     }
 
     override suspend fun uploadPoductImage(imageUri: Uri): String {
-        TODO("Not yet implemented")
+        return suspendCoroutine { continuation ->
+            val ramdomKey = UUID.randomUUID()
+            val childReference = storageReference.child(
+                "$STORAGE_IMAGES/${BuildConfig.FIREBASE_FLAVOR_COLLECTION}/$ramdomKey"
+            )
+
+            childReference.putFile(imageUri)
+                .addOnSuccessListener { taskSnapshot ->
+                    taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
+                        val path = uri.toString()
+                        continuation.resumeWith(Result.success(path))
+                    }
+                }.addOnFailureListener{ exception ->
+                    continuation.resumeWith(Result.failure(exception))
+                }
+        }
     }
 
     override suspend fun createProduct(product: Product): Product {
