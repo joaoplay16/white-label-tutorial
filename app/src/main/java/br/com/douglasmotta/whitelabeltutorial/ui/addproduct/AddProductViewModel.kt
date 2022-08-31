@@ -25,7 +25,7 @@ class AddProductViewModel(
 
     private var isFormValid = false
 
-    fun createProduct(description: String, price: String, imageUri: Uri)
+    fun createProduct(description: String, price: String, imageUri: Uri?)
         = viewModelScope.launch {
 
        isFormValid = true
@@ -36,7 +36,7 @@ class AddProductViewModel(
 
        if(isFormValid){
            try {
-                val product = createProductUseCase(description, price.fromCurrency(), imageUri)
+                val product = createProductUseCase(description, price.fromCurrency(), imageUri!!)
            } catch (e: Exception) {
                 Log.d("CreateProduct", e.toString())
             }
