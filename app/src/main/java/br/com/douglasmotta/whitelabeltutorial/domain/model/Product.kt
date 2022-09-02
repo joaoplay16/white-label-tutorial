@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 data class Product(
     val id: String = "",
     val description: String = "",
-    val priceUrl: Double = 0.0,
+    val price: Double = 0.0,
     @get:PropertyName("image_url")
     @set:PropertyName("image_url")
     var imageUrl: String = ""
