@@ -4,5 +4,5 @@ import javax.inject.Inject
 
 class ConfigImpl @Inject constructor(): Config {
 
-    override val addButtonVisibility: Boolean = true
+    override val addButtonVisibility: Int = View.VISIBLE
 }
