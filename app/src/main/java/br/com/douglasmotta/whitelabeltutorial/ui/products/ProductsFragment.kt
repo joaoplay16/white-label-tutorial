@@ -6,9 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import br.com.douglasmotta.whitelabeltutorial.R
 import br.com.douglasmotta.whitelabeltutorial.databinding.FragmentProductsBinding
+import br.com.douglasmotta.whitelabeltutorial.domain.model.Product
+import br.com.douglasmotta.whitelabeltutorial.util.PRODUCT_KEY
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
