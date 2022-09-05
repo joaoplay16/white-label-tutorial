@@ -42,7 +42,7 @@ class ProductsFragment : Fragment() {
         observeNavBackStack()
         observeVMEvents()
 
-        viewModel.getProducts()
+        getProducts()
     }
 
     private fun setRecyclerView(){
@@ -53,9 +53,19 @@ class ProductsFragment : Fragment() {
     }
 
     private fun setListeners(){
-        binding.fabAdd.setOnClickListener{
-            findNavController().navigate(R.id.action_productsFragment_to_addProductFragment)
+        with(binding){
+            swipeProducts.setOnRefreshListener {
+                getProducts()
+            }
+
+            fabAdd.setOnClickListener{
+                findNavController().navigate(R.id.action_productsFragment_to_addProductFragment)
+            }
         }
+    }
+
+    private fun getProducts(){
+        viewModel.getProducts()
     }
 
     private fun observeNavBackStack(){
@@ -87,6 +97,7 @@ class ProductsFragment : Fragment() {
 
     private fun observeVMEvents(){
         viewModel.productsData.observe(viewLifecycleOwner) { products ->
+            binding.swipeProducts.isRefreshing = false
             productsAdapter.submitList(products)
         }
 
