@@ -39,6 +39,7 @@ class ProductsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setRecyclerView()
         setListeners()
+        observeNavBackStack()
         observeVMEvents()
 
         viewModel.getProducts()
@@ -52,7 +53,36 @@ class ProductsFragment : Fragment() {
     }
 
     private fun setListeners(){
-        findNavController().navigate(R.id.action_productsFragment_to_addProductFragment)
+        binding.fabAdd.setOnClickListener{
+            findNavController().navigate(R.id.action_productsFragment_to_addProductFragment)
+        }
+    }
+
+    private fun observeNavBackStack(){
+        findNavController().run {
+            val navBacklStackEntry = getBackStackEntry(R.id.productsFragment)
+            val savedStateHandle = navBacklStackEntry.savedStateHandle
+            val observer = LifecycleEventObserver {_, event ->
+                if(event == Lifecycle.Event.ON_RESUME && savedStateHandle.contains(PRODUCT_KEY)){
+                    val product = savedStateHandle.get<Product>(PRODUCT_KEY)
+                    val oldList = productsAdapter.currentList
+                    val newList = oldList.toMutableList().apply {
+                        add(product)
+                    }
+                    productsAdapter.submitList(newList)
+                    binding.recyclerProducts.smoothScrollToPosition(newList.size - 1)
+                    savedStateHandle.remove<Product>(PRODUCT_KEY)
+
+                }
+            }
+            navBacklStackEntry.lifecycle.addObserver(observer)
+
+            viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver{_, event ->
+                if(event == Lifecycle.Event.ON_DESTROY){
+                    navBacklStackEntry.lifecycle.removeObserver(observer)
+                }
+            })
+        }
     }
 
     private fun observeVMEvents(){
